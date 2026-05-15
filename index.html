@@ -1,94 +1,132 @@
-# Web Mini Game Đoán Từ Khóa
-
-Lưu file dưới tên:
-
-```txt
-index.html
-```
-
-Sau đó:
-
-1. Vào GitHub
-2. Tạo repository mới
-3. Upload file `index.html`
-4. Vào:
-
-   * Settings
-   * Pages
-   * Deploy from branch
-   * Chọn `main`
-   * Save
-5. GitHub sẽ tạo link:
-
-```txt
-https://tenban.github.io/ten-repo
-```
-
-Mở link đó trên điện thoại là chơi được.
-
----
-
-# Code hoàn chỉnh
-
 ```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đoán Từ Khóa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Keyword Game</title>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      background: #111;
-      color: white;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      user-select: none;
+    body{
+      width:100vw;
+      height:100vh;
+      overflow:hidden;
+      position:relative;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      font-family:Arial,sans-serif;
+      user-select:none;
+
+      background:url("background.jpg") center center / cover no-repeat;
     }
 
-    #word {
-      font-size: 48px;
-      font-weight: bold;
-      padding: 20px;
-      transition: transform 0.2s ease;
+    body::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.12);
+      z-index:1;
     }
 
-    .hint {
-      position: fixed;
-      bottom: 20px;
-      font-size: 14px;
-      opacity: 0.5;
+    #word{
+      position:relative;
+      z-index:2;
+
+      width:88%;
+
+      color:white;
+      text-align:center;
+
+      font-size:clamp(54px, 9vw, 170px);
+      font-weight:800;
+      line-height:1.05;
+
+      text-shadow:0 4px 18px rgba(0,0,0,0.35);
+
+      transition:all .18s ease;
     }
 
-    .counter {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 18px;
-      opacity: 0.7;
+    #counter{
+      position:absolute;
+      top:28px;
+      right:34px;
+
+      z-index:3;
+
+      color:rgba(255,255,255,0.92);
+
+      font-size:24px;
+      font-weight:600;
+      letter-spacing:1px;
     }
+
+    .arrow{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+
+      z-index:3;
+
+      color:rgba(255,255,255,0.85);
+
+      font-size:90px;
+      font-weight:200;
+
+      cursor:pointer;
+
+      padding:20px;
+    }
+
+    .left{
+      left:18px;
+    }
+
+    .right{
+      right:18px;
+    }
+
+    @media(max-width:768px){
+
+      #word{
+        width:82%;
+        font-size:clamp(42px, 12vw, 90px);
+      }
+
+      .arrow{
+        font-size:58px;
+      }
+
+      #counter{
+        font-size:18px;
+        top:20px;
+        right:20px;
+      }
+    }
+
   </style>
 </head>
+
 <body>
 
-  <div class="counter" id="counter"></div>
+  <div id="counter"></div>
+
+  <div class="arrow left" onclick="prevWord()">‹</div>
+  <div class="arrow right" onclick="nextWord()">›</div>
+
   <div id="word"></div>
-  <div class="hint">Vuốt trái/phải hoặc chạm màn hình</div>
 
   <script>
+
     const words = [
       "Đào Alcurnia",
       "Bột kem béo Thực Vật MT35",
@@ -178,83 +216,70 @@ Mở link đó trên điện thoại là chơi được.
     const wordEl = document.getElementById("word");
     const counterEl = document.getElementById("counter");
 
-    function showWord() {
-      wordEl.style.transform = "scale(0.9)";
+    function renderWord(){
+
+      wordEl.style.opacity = 0;
+      wordEl.style.transform = "scale(0.94)";
 
       setTimeout(() => {
-        wordEl.innerText = words[index];
-        counterEl.innerText = `${index + 1} / ${words.length}`;
+
+        wordEl.innerHTML = words[index];
+        counterEl.innerHTML = `${index + 1} / ${words.length}`;
+
+        wordEl.style.opacity = 1;
         wordEl.style.transform = "scale(1)";
-      }, 100);
+
+      },120);
     }
 
-    function nextWord() {
+    function nextWord(){
+
       index++;
 
-      if (index >= words.length) {
+      if(index >= words.length){
         index = 0;
       }
 
-      showWord();
+      renderWord();
     }
 
-    function prevWord() {
+    function prevWord(){
+
       index--;
 
-      if (index < 0) {
+      if(index < 0){
         index = words.length - 1;
       }
 
-      showWord();
+      renderWord();
     }
-
-    document.body.addEventListener("click", nextWord);
 
     let startX = 0;
 
-    document.addEventListener("touchstart", (e) => {
+    document.addEventListener("touchstart",(e)=>{
       startX = e.touches[0].clientX;
     });
 
-    document.addEventListener("touchend", (e) => {
-      let endX = e.changedTouches[0].clientX;
-      let diff = startX - endX;
+    document.addEventListener("touchend",(e)=>{
 
-      if (diff > 50) {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+
+      if(diff > 50){
         nextWord();
       }
 
-      if (diff < -50) {
+      if(diff < -50){
         prevWord();
       }
     });
 
-    showWord();
+    document.body.addEventListener("click", nextWord);
+
+    renderWord();
+
   </script>
+
 </body>
 </html>
 ```
-
----
-
-# Chơi như thế nào
-
-* Chạm màn hình → từ tiếp theo
-* Vuốt trái → từ tiếp theo
-* Vuốt phải → quay lại từ trước
-* Hết danh sách → tự quay về từ đầu
-
----
-
-# Gợi ý nâng cấp sau này
-
-Bạn có thể thêm:
-
-* Random từ khóa
-* Đếm giờ
-* Chế độ đội chơi
-* Ẩn/hiện đáp án
-* Âm thanh
-* Chế độ full screen
-* Không cho trùng từ
-* Bảng điểm
