@@ -1,0 +1,260 @@
+# Web Mini Game Đoán Từ Khóa
+
+Lưu file dưới tên:
+
+```txt
+index.html
+```
+
+Sau đó:
+
+1. Vào GitHub
+2. Tạo repository mới
+3. Upload file `index.html`
+4. Vào:
+
+   * Settings
+   * Pages
+   * Deploy from branch
+   * Chọn `main`
+   * Save
+5. GitHub sẽ tạo link:
+
+```txt
+https://tenban.github.io/ten-repo
+```
+
+Mở link đó trên điện thoại là chơi được.
+
+---
+
+# Code hoàn chỉnh
+
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đoán Từ Khóa</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #111;
+      color: white;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      user-select: none;
+    }
+
+    #word {
+      font-size: 48px;
+      font-weight: bold;
+      padding: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 20px;
+      font-size: 14px;
+      opacity: 0.5;
+    }
+
+    .counter {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 18px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="counter" id="counter"></div>
+  <div id="word"></div>
+  <div class="hint">Vuốt trái/phải hoặc chạm màn hình</div>
+
+  <script>
+    const words = [
+      "Đào Alcurnia",
+      "Bột kem béo Thực Vật MT35",
+      "Halal",
+      "Lúave FMCG",
+      "Sánh Mịn",
+      "Trà Sữa Hòa Tan",
+      "TT16 Tam Đảo",
+      "Bột FR33",
+      "ISO 9001",
+      "IDOCEAN",
+      "Osterberg",
+      "Bột trà Houjicha",
+      "Chống Phân tầng",
+      "Loveramics",
+      "Đậm Đà",
+      "Đại Dương Ý Tưởng",
+      "Trà Oolong",
+      "Chu Du Vị Giác",
+      "Trà Đào",
+      "Lenez du Cafe",
+      "Chuyên Gia",
+      "BRCGS",
+      "Trà Ceylon",
+      "Trà Sữa Phô Mai",
+      "Hoa Trân",
+      "Phong phú",
+      "Nhất quán",
+      "Trà Đen Số 9",
+      "Y10 Hồng Lĩnh",
+      "Nhanh chóng",
+      "Giải Pháp Pha Chế",
+      "Quản lý chất lượng",
+      "Độc Quyền",
+      "Superior Taste Award",
+      "Teapreasso",
+      "Pesado",
+      "Bột trái cây",
+      "Comandante",
+      "Uy tín",
+      "Cải tiến",
+      "Milk Foam Phô Mai",
+      "Đội Ngũ R&D",
+      "Kiểm Soát Chất Lượng",
+      "Kỷ luật",
+      "Bột Milk Foam",
+      "Ngành F&B",
+      "Trà Sữa Matcha",
+      "Khách Hàng Trọng Tâm",
+      "Tiên Phong",
+      "Thức Uống Đá Xay",
+      "Lenez du Vin",
+      "Bột Cốt Dừa",
+      "Sáng tạo",
+      "Trà Sữa Truyền Thống",
+      "Bột Yogurt",
+      "Chi Nhánh Đà Nẵng",
+      "Kiến Tạo Thương Hiệu",
+      "Bột trà xanh matcha Uji",
+      "Trà Sữa Hong Kong",
+      "Gốm Sứ Nhập Khẩu",
+      "Đào Ngâm",
+      "Hệ Thống Truy Xuất",
+      "An Toàn Tối Đa",
+      "Muse Awards",
+      "Trà Nhài",
+      "Chuẩn Vị",
+      "Bột rau cau",
+      "Sốt hạt dẻ cười",
+      "Bột Cacao",
+      "Sáng Tạo Đổi Mới",
+      "Bán Lẻ",
+      "Tiết Kiệm Chi Phí",
+      "Cà Phê Lúave",
+      "IDOFLEX",
+      "Bức Tranh Phong Cảnh",
+      "Vươn Xa Biển Lớn",
+      "Bột Pudding",
+      "Luave Professional",
+      "Trà Túi Lọc",
+      "Milk Foam Creme Brulee",
+      "Văn phòng Cần Thơ"
+    ];
+
+    let index = 0;
+
+    const wordEl = document.getElementById("word");
+    const counterEl = document.getElementById("counter");
+
+    function showWord() {
+      wordEl.style.transform = "scale(0.9)";
+
+      setTimeout(() => {
+        wordEl.innerText = words[index];
+        counterEl.innerText = `${index + 1} / ${words.length}`;
+        wordEl.style.transform = "scale(1)";
+      }, 100);
+    }
+
+    function nextWord() {
+      index++;
+
+      if (index >= words.length) {
+        index = 0;
+      }
+
+      showWord();
+    }
+
+    function prevWord() {
+      index--;
+
+      if (index < 0) {
+        index = words.length - 1;
+      }
+
+      showWord();
+    }
+
+    document.body.addEventListener("click", nextWord);
+
+    let startX = 0;
+
+    document.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    document.addEventListener("touchend", (e) => {
+      let endX = e.changedTouches[0].clientX;
+      let diff = startX - endX;
+
+      if (diff > 50) {
+        nextWord();
+      }
+
+      if (diff < -50) {
+        prevWord();
+      }
+    });
+
+    showWord();
+  </script>
+</body>
+</html>
+```
+
+---
+
+# Chơi như thế nào
+
+* Chạm màn hình → từ tiếp theo
+* Vuốt trái → từ tiếp theo
+* Vuốt phải → quay lại từ trước
+* Hết danh sách → tự quay về từ đầu
+
+---
+
+# Gợi ý nâng cấp sau này
+
+Bạn có thể thêm:
+
+* Random từ khóa
+* Đếm giờ
+* Chế độ đội chơi
+* Ẩn/hiện đáp án
+* Âm thanh
+* Chế độ full screen
+* Không cho trùng từ
+* Bảng điểm
